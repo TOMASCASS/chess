@@ -1,5 +1,6 @@
 import pygame
 import os
+from pieces import Piece
 
 # Initialize Pygame
 pygame.init()
@@ -10,10 +11,9 @@ ROWS, COLS = 8, 8
 SQUARE_SIZE = WIDTH // 8
 
 # Colors
-WHITE = (255, 255, 255)
-GREEN = (152, 188, 132)
+BEIGE = (232, 220, 202)
+BROWN = (166, 124, 91)
 
-# Load piece images
 def load_pieces():
     pieces = {}
     for piece in os.listdir('pieces'):
@@ -21,11 +21,11 @@ def load_pieces():
         pieces[piece.split('.')[0]] = pygame.transform.scale(img, (SQUARE_SIZE, SQUARE_SIZE))
     return pieces
 
-def draw_board(screen, pieces):
+def create_board(pieces):
+    board = [[None for _ in range(COLS)] for _ in range(ROWS)]
+
     for row in range(ROWS):
         for col in range(COLS):
-            rect = pygame.Rect(col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
-            pygame.draw.rect(screen, WHITE if (row + col) % 2 == 0 else GREEN, rect)
             if row == 0 or row == 7:
                 if col in (0, 7):
                     piece_name = 'white_rook' if row == 7 else 'black_rook'
@@ -37,11 +37,25 @@ def draw_board(screen, pieces):
                     piece_name = 'white_queen' if row == 7 else 'black_queen'
                 elif col == 4:
                     piece_name = 'white_king' if row == 7 else 'black_king'
-                screen.blit(pieces[piece_name], rect)
+                color = 'white' if row == 7 else 'black'
+                board[row][col] = Piece(row, col, color, pieces[piece_name], SQUARE_SIZE)
             elif row == 1:
-                screen.blit(pieces['black_pawn'], rect)
+                board[row][col] = Piece(row, col, 'black', pieces['black_pawn'], SQUARE_SIZE)
             elif row == 6:
-                screen.blit(pieces['white_pawn'], rect)
+                board[row][col] = Piece(row, col, 'white', pieces['white_pawn'], SQUARE_SIZE)
+    return board
 
+def draw_board(screen, board):
+    for row in range(ROWS):
+        for col in range(COLS):
+            rect = pygame.Rect(col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
+            pygame.draw.rect(screen, BEIGE if (row + col) % 2 == 0 else BROWN, rect)
+            piece = board[row][col]
+            if piece:
+                piece.draw(screen)
 
+def get_clicked_position(pos):
+    x, y = pos
+    row, col = y // SQUARE_SIZE, x // SQUARE_SIZE
+    return row, col
 
