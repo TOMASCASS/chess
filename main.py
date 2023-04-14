@@ -17,6 +17,7 @@ def main():
     clock = pygame.time.Clock()
     pieces = load_pieces()
     board = create_board(pieces)
+    current_player = 'white'
 
     selected_piece = None
     moves_history = []
@@ -32,14 +33,14 @@ def main():
                 clicked_piece = board[row][col]
 
                 if not selected_piece:
-                    if clicked_piece:
+                    if clicked_piece and clicked_piece.color == current_player:
                         selected_piece = clicked_piece
                         selected_piece.selected = True
                 else:
                     if clicked_piece == selected_piece:
                         selected_piece.selected = False
                         selected_piece = None
-                    else:
+                    elif clicked_piece is None or clicked_piece.color != current_player:
                         if selected_piece.is_valid_move(board, row, col):
                             old_row, old_col = selected_piece.row, selected_piece.col
                             captured_piece = board[row][col]
@@ -48,6 +49,7 @@ def main():
                             board[old_row][old_col] = None
                             moves_history.append((old_row, old_col, row, col, captured_piece))
                             print(f"Move: ({old_row}, {old_col}) -> ({row}, {col})")
+                            current_player = 'black' if current_player == 'white' else 'white'
                             selected_piece.selected = False
                             selected_piece = None
             elif event.type == pygame.KEYDOWN:
