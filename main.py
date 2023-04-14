@@ -40,15 +40,16 @@ def main():
                         selected_piece.selected = False
                         selected_piece = None
                     else:
-                        old_row, old_col = selected_piece.row, selected_piece.col
-                        captured_piece = board[row][col]
-                        selected_piece.move(row, col)
-                        board[row][col] = selected_piece
-                        board[old_row][old_col] = None
-                        moves_history.append((old_row, old_col, row, col, captured_piece))
-                        print(f"Move: ({old_row}, {old_col}) -> ({row}, {col})")
-                        selected_piece.selected = False
-                        selected_piece = None
+                        if selected_piece.is_valid_move(board, row, col):
+                            old_row, old_col = selected_piece.row, selected_piece.col
+                            captured_piece = board[row][col]
+                            selected_piece.move(row, col)
+                            board[row][col] = selected_piece
+                            board[old_row][old_col] = None
+                            moves_history.append((old_row, old_col, row, col, captured_piece))
+                            print(f"Move: ({old_row}, {old_col}) -> ({row}, {col})")
+                            selected_piece.selected = False
+                            selected_piece = None
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_z and pygame.key.get_mods() & pygame.KMOD_CTRL:
                     undo_move(moves_history, board)

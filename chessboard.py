@@ -1,14 +1,15 @@
 import pygame
 import os
-from pieces import Piece
+from pieces import King, Pawn, Rook, Knight, Bishop, Queen
 
 # Initialize Pygame
 pygame.init()
 
 # Chessboard and window settings
-WIDTH, HEIGHT = 800, 800
 ROWS, COLS = 8, 8
+WIDTH, HEIGHT = 800, 800
 SQUARE_SIZE = WIDTH // 8
+FLIPPED_BOARD = False
 
 # Colors
 BEIGE = (232, 220, 202)
@@ -28,21 +29,29 @@ def create_board(pieces):
         for col in range(COLS):
             if row == 0 or row == 7:
                 if col in (0, 7):
-                    piece_name = 'white_rook' if row == 7 else 'black_rook'
+                    color = 'white' if row == 7 else 'black'
+                    piece_name = f'{color}_rook'
+                    board[row][col] = Rook(row, col, color, pieces[piece_name], SQUARE_SIZE)
                 elif col in (1, 6):
-                    piece_name = 'white_knight' if row == 7 else 'black_knight'
+                    color = 'white' if row == 7 else 'black'
+                    piece_name = f'{color}_knight'
+                    board[row][col] = Knight(row, col, color, pieces[piece_name], SQUARE_SIZE)
                 elif col in (2, 5):
-                    piece_name = 'white_bishop' if row == 7 else 'black_bishop'
+                    color = "white" if row == 7 else "black"
+                    piece_name = f'{color}_bishop'
+                    board[row][col] = Bishop(row, col, color, pieces[piece_name], SQUARE_SIZE)
                 elif col == 3:
-                    piece_name = 'white_queen' if row == 7 else 'black_queen'
+                    color = "white" if row == 7 else "black"
+                    piece_name = f'{color}_queen'
+                    board[row][col] = Queen(row, col, color, pieces[piece_name], SQUARE_SIZE)
                 elif col == 4:
-                    piece_name = 'white_king' if row == 7 else 'black_king'
-                color = 'white' if row == 7 else 'black'
-                board[row][col] = Piece(row, col, color, pieces[piece_name], SQUARE_SIZE)
+                    color = 'white' if row == 7 else 'black'
+                    piece_name = f'{color}_king'
+                    board[row][col] = King(row, col, color, pieces[piece_name], SQUARE_SIZE)
             elif row == 1:
-                board[row][col] = Piece(row, col, 'black', pieces['black_pawn'], SQUARE_SIZE)
+                board[row][col] = Pawn(row, col, 'black', pieces['black_pawn'], SQUARE_SIZE)
             elif row == 6:
-                board[row][col] = Piece(row, col, 'white', pieces['white_pawn'], SQUARE_SIZE)
+                board[row][col] = Pawn(row, col, 'white', pieces['white_pawn'], SQUARE_SIZE)
     return board
 
 def draw_board(screen, board):
@@ -56,6 +65,10 @@ def draw_board(screen, board):
 
 def get_clicked_position(pos):
     x, y = pos
-    row, col = y // SQUARE_SIZE, x // SQUARE_SIZE
+    row = y // SQUARE_SIZE
+    col = x // SQUARE_SIZE
+    if FLIPPED_BOARD:
+        row = ROWS - 1 - row
+        col = COLS - 1 - col
     return row, col
 
